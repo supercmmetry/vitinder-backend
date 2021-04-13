@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -41,8 +42,10 @@ namespace Api.Middlewares
             if (attribute != null)
             {
                 var claims = context.User.Claims.ToDictionary(claim => claim.Type);
-                var userId = claims["user_id"].Value;
+                
+                var userId = claims.GetValueOrDefault("user_id")?.Value;
                 var user = await mediator.Send(new ReadOne.Query {Id = userId});
+                
                 if (user?.AccessLevel != attribute.Access.ToString())
                 {
                     context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
