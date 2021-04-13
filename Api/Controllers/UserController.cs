@@ -1,14 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Api.Middlewares;
 using Application.Users;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace Api.Controllers
 {
     public class UserController : BaseApiController
     {
+        [Authorize]
+        [RequireAccess(Access.Admin)]
         [HttpGet]
         public async Task<ActionResult<List<User>>> GetUsers([FromQuery] int skip, [FromQuery] int limit)
         {
@@ -16,7 +19,7 @@ namespace API.Controllers
         }
         
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult<User>> GetUser(string id)
         {
             return await Mediator.Send(new ReadOne.Query{Id = id});
         }
@@ -34,7 +37,7 @@ namespace API.Controllers
         }
         
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             return Ok(await Mediator.Send(new Delete.Command {Id = id}));
         }

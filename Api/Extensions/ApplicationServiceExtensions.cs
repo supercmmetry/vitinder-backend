@@ -1,19 +1,33 @@
-using System;
-using Application.Users;
 using Application.Core;
-using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 
-namespace API.Extensions
+namespace Api.Extensions
 {
     public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = "https://securetoken.google.com/vitinder-f5e6b";
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "https://securetoken.google.com/my-project-id/vitinder-f5e6b",
+                        ValidateAudience = true,
+                        ValidAudience = "vitinder-f5e6b",
+                        ValidateLifetime = true
+                    };
+                });
+            
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"}); });
             services.AddDbContext<DataContext>(opt =>
             {
@@ -27,7 +41,7 @@ namespace API.Extensions
 
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddUserServices(config);
-            
+
             return services;
         }
     }

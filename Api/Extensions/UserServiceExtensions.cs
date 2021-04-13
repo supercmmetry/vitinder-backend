@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace API.Extensions
+namespace Api.Extensions
 {
     public static class UserServiceExtensions
     {

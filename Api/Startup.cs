@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Extensions;
+using Api.Extensions;
+using Api.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace API
+namespace Api
 {
     public class Startup
     {
@@ -47,7 +48,11 @@ namespace API
 
             app.UseCors("CorsPolicy");
 
+            app.UseAuthentication();
+            
             app.UseAuthorization();
+
+            app.UseMiddleware<AccessMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

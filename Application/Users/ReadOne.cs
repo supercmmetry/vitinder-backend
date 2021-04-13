@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
@@ -11,7 +10,7 @@ namespace Application.Users
     {
         public class Query : IRequest<User>
         {
-            public Guid Id { get; set; }
+            public string Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, User>
