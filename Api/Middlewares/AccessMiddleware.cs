@@ -10,9 +10,11 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace Api.Middlewares
 {
-    public enum Access {
-        Admin,
-        Common
+    public enum Access
+    {
+        Admin = 10, 
+        Common = 1,
+        Anonymous = 0
     }
 
     public class RequireAccess : Attribute
@@ -24,7 +26,7 @@ namespace Api.Middlewares
             Access = access;
         }
     }
-    
+
     public class AccessMiddleware
     {
         private RequestDelegate _next;
@@ -42,19 +44,22 @@ namespace Api.Middlewares
             if (attribute != null)
             {
                 var claims = context.User.Claims.ToDictionary(claim => claim.Type);
-                
+
                 var userId = claims.GetValueOrDefault("user_id")?.Value;
                 var user = await mediator.Send(new ReadOne.Query {Id = userId});
-                
-                if (user?.AccessLevel != attribute.Access.ToString())
+
+                if (user?.AccessLevel < (int) attribute.Access)
                 {
                     context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                     await context.Response.WriteAsync("");
                     return;
                 }
+
+                context.Items["FirebaseUserId"] = userId;
+                context.Items["CurrentUser"] = user;
             }
 
             await _next(context);
-        } 
+        }
     }
 }

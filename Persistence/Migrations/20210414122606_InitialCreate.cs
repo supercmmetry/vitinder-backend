@@ -11,9 +11,9 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
-                    AccessLevel = table.Column<string>(type: "text", nullable: true)
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    AccessLevel = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

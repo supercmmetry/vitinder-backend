@@ -5,9 +5,16 @@ namespace Application.Core
 {
     public class MappingProfiles : Profile
     {
-        public MappingProfiles()
+        public void CreateUserMaps()
         {
             CreateMap<User, User>();
+            CreateMap<UserRequest, User>();
+            CreateMap<User, UserResponse>();
+        }
+
+        public MappingProfiles()
+        {
+            CreateUserMaps();
         }
     }
 }
