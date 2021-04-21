@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain
@@ -7,27 +8,37 @@ namespace Domain
     {
         [Key] public string Id { get; set; }
 
-        [Required] public string FirstName { get; set; }
+        [StringLength(256)] [Required] public string FirstName { get; set; }
 
-        [Required] public string LastName { get; set; }
+        [StringLength(256)] [Required] public string LastName { get; set; }
+
+        [Range(16, 100)] [Required] public int Age { get; set; }
         
-        [Required] public int AccessLevel { get; set; }
+        [StringLength(64)] public string FieldOfStudy { get; set; }
+
+        [Range(1, 16)] public int YearOfStudy { get; set; }
+        
+        [StringLength(512)] public string Bio { get; set; }
+        
+        public ICollection<Passion> Passions { get; set; }
+        [Range(0, 10)] [Required] public int AccessLevel { get; set; }
     }
 
     public class UserRequest
     {
-        [Required]
-        public string FirstName { get; set; }
-        
-        [Required]
-        public string LastName { get; set; }
+        [StringLength(256)] [Required] public string FirstName { get; set; }
 
+        [StringLength(256)] [Required] public string LastName { get; set; }
+
+        [Range(16, 100)] [Required] public int Age { get; set; }
     }
 
     public class UserResponse
     {
         public string FirstName { get; set; }
+
+        public string LastName { get; set; }
         
-        public string LastName { get; set; } 
+        public int Age { get; set; }
     }
 }

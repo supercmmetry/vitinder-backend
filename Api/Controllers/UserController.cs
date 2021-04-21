@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Api.Extensions;
 using Api.Middlewares;
 using Application.Users;
-using AutoMapper;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,40 +11,40 @@ namespace Api.Controllers
 {
     public class UserController : BaseApiController
     {
-        //[Authorize]
-        //[RequireAccess(Access.Admin)]
+        [Authorize]
+        [RequireAccess(Access.Admin)]
         [HttpGet("all")]
         public async Task<ActionResult<List<User>>> GetUsers([FromQuery] int skip, [FromQuery] int limit)
         {
             return await Mediator.Send(new ReadMany.Query {Skip = skip, Limit = limit});
         }
 
-        //[Authorize]
-        //[RequireAccess(Access.Admin)]
+        [Authorize]
+        [RequireAccess(Access.Admin)]
         [HttpGet]
         public async Task<ActionResult<User>> GetUser([FromQuery] string id)
         {
             return await Mediator.Send(new ReadOne.Query {Id = id});
         }
 
-        //[Authorize]
-        //[RequireAccess(Access.Admin)]
+        [Authorize]
+        [RequireAccess(Access.Admin)]
         [HttpPost]
         public async Task<IActionResult> CreateUser(User user)
         {
             return Ok(await Mediator.Send(new Create.Command {User = user}));
         }
 
-        //[Authorize]
-        //[RequireAccess(Access.Admin)]
+        [Authorize]
+        [RequireAccess(Access.Admin)]
         [HttpPatch]
         public async Task<IActionResult> UpdateUser(User user)
         {
             return Ok(await Mediator.Send(new Update.Command {User = user}));
         }
 
-        //[Authorize]
-        //[RequireAccess(Access.Admin)]
+        [Authorize]
+        [RequireAccess(Access.Admin)]
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromQuery] string id)
         {

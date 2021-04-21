@@ -10,5 +10,7 @@ namespace Persistence
         }
 
         public DbSet<User> Users { get; set; }
+        
+        public DbSet<Passion> Passions { get; set; }
     }
 }

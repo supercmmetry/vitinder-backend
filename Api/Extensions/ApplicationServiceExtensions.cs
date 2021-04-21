@@ -1,3 +1,4 @@
+using Api.Filters;
 using Application.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,11 @@ namespace Api.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ValidationFilter());
+            });
+            
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -21,7 +27,7 @@ namespace Api.Extensions
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = "https://securetoken.google.com/my-project-id/vitinder-f5e6b",
+                        ValidIssuer = "https://securetoken.google.com/vitinder-f5e6b",
                         ValidateAudience = true,
                         ValidAudience = "vitinder-f5e6b",
                         ValidateLifetime = true
@@ -41,6 +47,7 @@ namespace Api.Extensions
 
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddUserServices(config);
+            services.AddPassionServices(config);
 
             return services;
         }
