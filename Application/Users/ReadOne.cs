@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Users
@@ -24,7 +26,10 @@ namespace Application.Users
             
             public async Task<User> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await _context.Users.FindAsync(request.Id);
+                return await _context.Users
+                    .Where(user => user.Id == request.Id)
+                    .Include(user => user.Passions)
+                    .FirstAsync();
             }
         }
     }

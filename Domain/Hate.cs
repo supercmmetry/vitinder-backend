@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain
 {
-    public class Passion
+    public class Hate
     {
         [Key] public Guid Id { get; set; }
         
@@ -13,24 +13,24 @@ namespace Domain
         public ICollection<User> Users { get; set; }
     }
 
-    public class PassionCreate
+    public class HateCreate
     {
         [StringLength(64)] [Required] public string Name { get; set; }
     }
     
-    public class PassionUpdate
+    public class HateUpdate
     {
         public Guid Id { get; set; }
         
         public string Name { get; set; }
     }
 
-    public class PassionRequest
+    public class HateRequest
     {
         public Guid Id { get; set; }
     }
 
-    public class PassionResponse
+    public class HateResponse
     {
         public Guid Id { get; set; }
         

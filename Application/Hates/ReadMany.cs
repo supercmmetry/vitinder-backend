@@ -7,18 +7,18 @@ using Persistence;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Users
+namespace Application.Hates
 {
     public class ReadMany
     {
-        public class Query : IRequest<List<User>>
+        public class Query : IRequest<List<Hate>>
         {
             public int Skip { get; set; }
 
             public int Limit { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, List<User>>
+        public class Handler : IRequestHandler<Query, List<Hate>>
         {
             private readonly DataContext _context;
 
@@ -27,13 +27,12 @@ namespace Application.Users
                 _context = context;
             }
 
-            public async Task<List<User>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<Hate>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await _context.Users
-                    .OrderBy(user => user.Id)
+                return await _context.Hates
+                    .OrderBy(hate => hate.Id)
                     .Skip(request.Skip)
                     .Take(request.Limit)
-                    .Include(user => user.Passions)
                     .ToListAsync();
             }
         }

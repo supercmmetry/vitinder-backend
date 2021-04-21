@@ -46,8 +46,10 @@ namespace Api.Extensions
             });
 
             services.AddAutoMapper(typeof(MappingProfiles));
+            
             services.AddUserServices(config);
             services.AddPassionServices(config);
+            services.AddHateServices(config);
 
             return services;
         }

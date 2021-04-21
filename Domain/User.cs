@@ -11,6 +11,10 @@ namespace Domain
         [StringLength(256)] [Required] public string FirstName { get; set; }
 
         [StringLength(256)] [Required] public string LastName { get; set; }
+        
+        [StringLength(8)] [Required] public string Sex { get; set; }
+        
+        [StringLength(32)] [Required] public string SexualOrientation { get; set; }
 
         [Range(16, 100)] [Required] public int Age { get; set; }
         
@@ -20,8 +24,11 @@ namespace Domain
         
         [StringLength(512)] public string Bio { get; set; }
         
-        public ICollection<Passion> Passions { get; set; }
         [Range(0, 10)] [Required] public int AccessLevel { get; set; }
+
+        public ICollection<Passion> Passions { get; set; }
+        
+        public ICollection<Hate> Hates { get; set; }
     }
 
     public class UserRequest

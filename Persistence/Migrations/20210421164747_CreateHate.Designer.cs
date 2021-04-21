@@ -10,8 +10,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210421132632_CreatePassion")]
-    partial class CreatePassion
+    [Migration("20210421164747_CreateHate")]
+    partial class CreateHate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,22 @@ namespace Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+            modelBuilder.Entity("Domain.Hate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hates");
+                });
 
             modelBuilder.Entity("Domain.Passion", b =>
                 {
@@ -74,6 +90,21 @@ namespace Persistence.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("HateUser", b =>
+                {
+                    b.Property<Guid>("HatesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
+                    b.HasKey("HatesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("HateUser");
+                });
+
             modelBuilder.Entity("PassionUser", b =>
                 {
                     b.Property<Guid>("PassionsId")
@@ -87,6 +118,21 @@ namespace Persistence.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("PassionUser");
+                });
+
+            modelBuilder.Entity("HateUser", b =>
+                {
+                    b.HasOne("Domain.Hate", null)
+                        .WithMany()
+                        .HasForeignKey("HatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PassionUser", b =>

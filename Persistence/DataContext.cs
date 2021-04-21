@@ -10,7 +10,14 @@ namespace Persistence
         }
 
         public DbSet<User> Users { get; set; }
-        
+
         public DbSet<Passion> Passions { get; set; }
+
+        public DbSet<Hate> Hates { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

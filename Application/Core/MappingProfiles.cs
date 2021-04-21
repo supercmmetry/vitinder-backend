@@ -16,6 +16,7 @@ namespace Application.Core
         {
             CreateMap<Passion, Passion>();
             CreateMap<PassionCreate, Passion>();
+            CreateMap<PassionUpdate, Passion>();
             CreateMap<PassionRequest, Passion>();
             CreateMap<Passion, PassionResponse>();
         }
