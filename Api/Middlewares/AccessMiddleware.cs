@@ -12,16 +12,16 @@ namespace Api.Middlewares
 {
     public enum Access
     {
-        Admin = 10, 
+        Admin = 10,
         Common = 1,
         Anonymous = 0
     }
 
-    public class RequireAccess : Attribute
+    public class RequireAccessAttribute : Attribute
     {
         public Access Access { get; set; }
 
-        public RequireAccess(Access access)
+        public RequireAccessAttribute(Access access)
         {
             Access = access;
         }
@@ -39,14 +39,18 @@ namespace Api.Middlewares
         public async Task Invoke(HttpContext context, IMediator mediator)
         {
             var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
-            var attribute = endpoint?.Metadata.GetMetadata<RequireAccess>();
+            var attribute = endpoint?.Metadata.GetMetadata<RequireAccessAttribute>();
 
             if (attribute != null)
             {
                 var claims = context.User.Claims.ToDictionary(claim => claim.Type);
 
                 var userId = claims.GetValueOrDefault("user_id")?.Value;
-                var user = await mediator.Send(new ReadOne.Query {Id = userId});
+
+
+                var user = attribute.Access > Access.Anonymous
+                    ? await mediator.Send(new ReadOne.Query {Id = userId})
+                    : null;
 
                 if (user?.AccessLevel < (int) attribute.Access)
                 {

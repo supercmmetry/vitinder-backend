@@ -35,6 +35,30 @@ namespace Persistence.Migrations
                     b.ToTable("Hates");
                 });
 
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("OtherId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OtherId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Matches");
+                });
+
             modelBuilder.Entity("Domain.Passion", b =>
                 {
                     b.Property<Guid>("Id")
@@ -126,6 +150,21 @@ namespace Persistence.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("PassionUser");
+                });
+
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.HasOne("Domain.User", "Other")
+                        .WithMany()
+                        .HasForeignKey("OtherId");
+
+                    b.HasOne("Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Other");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HateUser", b =>

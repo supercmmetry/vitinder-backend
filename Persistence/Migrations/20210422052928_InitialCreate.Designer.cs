@@ -10,8 +10,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210421164747_CreateHate")]
-    partial class CreateHate
+    [Migration("20210422052928_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,30 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Hates");
+                });
+
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("OtherId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OtherId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("Domain.Passion", b =>
@@ -82,6 +106,16 @@ namespace Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
+
+                    b.Property<string>("SexualOrientation")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
                     b.Property<int>("YearOfStudy")
                         .HasColumnType("integer");
 
@@ -118,6 +152,21 @@ namespace Persistence.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("PassionUser");
+                });
+
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.HasOne("Domain.User", "Other")
+                        .WithMany()
+                        .HasForeignKey("OtherId");
+
+                    b.HasOne("Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Other");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HateUser", b =>

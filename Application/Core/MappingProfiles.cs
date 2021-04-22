@@ -20,11 +20,21 @@ namespace Application.Core
             CreateMap<PassionRequest, Passion>();
             CreateMap<Passion, PassionResponse>();
         }
+        
+        public void CreateHateMaps()
+        {
+            CreateMap<Hate, Hate>();
+            CreateMap<HateCreate, Hate>();
+            CreateMap<HateUpdate, Hate>();
+            CreateMap<HateRequest, Hate>();
+            CreateMap<Hate, HateResponse>();
+        }
 
         public MappingProfiles()
         {
             CreateUserMaps();
             CreatePassionMaps();
+            CreateHateMaps();
         }
     }
 }

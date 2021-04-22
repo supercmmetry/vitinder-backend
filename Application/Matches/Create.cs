@@ -1,35 +1,31 @@
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using Domain;
 using MediatR;
 using Persistence;
 
-namespace Application.Users
+namespace Application.Matches
 {
-    public class Update
+    public class Create
     {
         public class Command : IRequest
         {
-            public User User { get; set; }
+            public Match Match { get; set; }
         }
 
         public class Handler : IRequestHandler<Command>
         {
-            public Handler(DataContext context, IMapper mapper)
+            private readonly DataContext _context;
+
+            public Handler(DataContext context)
             {
                 _context = context;
-                _mapper = mapper;
             }
 
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
-            
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var user = await _context.Users.FindAsync(request.User.Id);
-                _mapper.Map(request.User, user);
-                _context.Users.Update(user);
+                _context.Matches.Add(request.Match);
+
                 await _context.SaveChangesAsync();
 
                 return Unit.Value;

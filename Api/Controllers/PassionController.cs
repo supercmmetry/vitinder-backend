@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Api.Extensions;
 using Api.Middlewares;
 using Application.Passions;
 using Domain;
@@ -51,6 +52,18 @@ namespace Api.Controllers
         public async Task<IActionResult> DeletePassion([FromQuery] Guid id)
         {
             return Ok(await Mediator.Send(new Delete.Command {Id = id}));
+        }
+
+        [Authorize]
+        [RequireAccess(Access.Common)]
+        [HttpPost("set")]
+        public async Task<IActionResult> SetPassions(List<PassionRequest> passions)
+        {
+            return Ok(await Mediator.Send(new SetInUser.Command
+            {
+                UserId = HttpContext.GetFirebaseUserId(),
+                Passions = Mapper.Map<List<PassionRequest>, List<Passion>>(passions)
+            }));
         }
     }
 }

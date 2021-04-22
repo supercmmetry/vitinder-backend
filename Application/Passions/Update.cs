@@ -30,7 +30,8 @@ namespace Application.Passions
                 var passion = await _context.Passions.FindAsync(request.Passion.Id);
                 _mapper.Map(request.Passion, passion);
                 _context.Passions.Update(passion);
-                
+                await _context.SaveChangesAsync();
+
                 return Unit.Value;
             }
         }

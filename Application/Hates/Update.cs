@@ -30,7 +30,8 @@ namespace Application.Hates
                 var hate = await _context.Hates.FindAsync(request.Hate.Id);
                 _mapper.Map(request.Hate, hate);
                 _context.Hates.Update(hate);
-                
+                await _context.SaveChangesAsync();
+
                 return Unit.Value;
             }
         }

@@ -20,14 +20,14 @@ namespace Domain
     
     public class PassionUpdate
     {
-        public Guid Id { get; set; }
+        [Required] public Guid Id { get; set; }
         
-        public string Name { get; set; }
+        [StringLength(64)] [Required] public string Name { get; set; }
     }
 
     public class PassionRequest
     {
-        public Guid Id { get; set; }
+        [Required] public Guid Id { get; set; }
     }
 
     public class PassionResponse

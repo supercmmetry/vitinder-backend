@@ -14,6 +14,8 @@ namespace Persistence
         public DbSet<Passion> Passions { get; set; }
 
         public DbSet<Hate> Hates { get; set; }
+        
+        public DbSet<Match> Matches { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

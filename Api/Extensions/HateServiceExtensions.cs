@@ -14,6 +14,7 @@ namespace Api.Extensions
             services.AddMediatR(typeof(ReadMany.Handler));
             services.AddMediatR(typeof(Update.Handler));
             services.AddMediatR(typeof(Delete.Handler));
+            services.AddMediatR(typeof(SetInUser.Handler));
             return services;
         }
     }

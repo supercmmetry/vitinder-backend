@@ -38,6 +38,10 @@ namespace Domain
         [StringLength(256)] [Required] public string LastName { get; set; }
 
         [Range(16, 100)] [Required] public int Age { get; set; }
+        
+        [StringLength(8)] [Required] public string Sex { get; set; }
+        
+        [StringLength(32)] [Required] public string SexualOrientation { get; set; }
     }
 
     public class UserResponse
@@ -47,5 +51,9 @@ namespace Domain
         public string LastName { get; set; }
         
         public int Age { get; set; }
+        
+        public string Sex { get; set; }
+        
+        public string SexualOrientation { get; set; }
     }
 }
