@@ -7,8 +7,10 @@ namespace Domain
     {
         [Key] public Guid Id { get; set; }
 
+        [Required] public Guid UserId { get; set; }
         public User User { get; set; }
 
+        [Required] public Guid OtherId { get; set; }
         public User Other { get; set; }
 
         [Required] public bool Status { get; set; }
