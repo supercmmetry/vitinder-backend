@@ -42,12 +42,14 @@ namespace Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("OtherId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("Status")
                         .HasColumnType("boolean");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -120,6 +122,10 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasCheckConstraint("CK_ValidSexValue", "\"Sex\" in ('Male', 'Female', 'Other')");
+
+                    b.HasCheckConstraint("CK_ValidSexualOrientationValue", "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian','Bisexual', 'Asexual', 'Demisexual', 'Pansexual', 'Queer', 'Bicurious', 'Aromantic')");
                 });
 
             modelBuilder.Entity("HateUser", b =>
@@ -156,11 +162,15 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.User", "Other")
                         .WithMany()
-                        .HasForeignKey("OtherId");
+                        .HasForeignKey("OtherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Other");
 

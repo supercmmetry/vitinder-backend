@@ -50,6 +50,7 @@ namespace Api.Extensions
             services.AddUserServices(config);
             services.AddPassionServices(config);
             services.AddHateServices(config);
+            services.AddMatchServices(config);
 
             return services;
         }

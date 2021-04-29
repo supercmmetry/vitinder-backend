@@ -49,6 +49,8 @@ namespace Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.CheckConstraint("CK_ValidSexValue", "\"Sex\" in ('Male', 'Female', 'Other')");
+                    table.CheckConstraint("CK_ValidSexualOrientationValue", "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian','Bisexual', 'Asexual', 'Demisexual', 'Pansexual', 'Queer', 'Bicurious', 'Aromantic')");
                 });
 
             migrationBuilder.CreateTable(
@@ -80,8 +82,8 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    OtherId = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    OtherId = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -92,13 +94,13 @@ namespace Persistence.Migrations
                         column: x => x.OtherId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Matches_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

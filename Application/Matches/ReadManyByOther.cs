@@ -14,7 +14,7 @@ namespace Application.Matches
     {
         public class Query : IRequest<List<Match>>
         {
-            public Guid OtherId { get; set; }
+            public string OtherId { get; set; }
             
             public int Skip { get; set; }
             

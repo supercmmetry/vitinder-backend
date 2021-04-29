@@ -72,5 +72,20 @@ namespace Api.Controllers
             await Mediator.Send(new Create.Command {User = user});
             return Ok();
         }
+
+        [Authorize]
+        [RequireAccess(Access.Common)]
+        [HttpGet("recommend")]
+        public async Task<ActionResult<List<UserResponse>>> Recommend([FromQuery] int skip, [FromQuery] int limit)
+        {
+            var recommendations = await Mediator.Send(new Recommend.Query
+            {
+                UserId = HttpContext.GetFirebaseUserId(),
+                Skip = skip,
+                Limit = limit
+            });
+
+            return Mapper.Map<List<User>, List<UserResponse>>(recommendations);
+        }
     }
 }

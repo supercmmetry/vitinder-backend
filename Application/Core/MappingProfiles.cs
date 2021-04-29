@@ -29,6 +29,15 @@ namespace Application.Core
             CreateMap<HateRequest, Hate>();
             CreateMap<Hate, HateResponse>();
         }
+        
+        public void CreateMatchMaps()
+        {
+            CreateMap<Match, Match>();
+            CreateMap<MatchRequest, Match>();
+            CreateMap<HateUpdate, Hate>();
+            CreateMap<HateRequest, Hate>();
+            CreateMap<Hate, HateResponse>();
+        }
 
         public MappingProfiles()
         {
