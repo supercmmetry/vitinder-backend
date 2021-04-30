@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Api.Extensions;
 using Api.Middlewares;
@@ -76,12 +77,11 @@ namespace Api.Controllers
         [Authorize]
         [RequireAccess(Access.Common)]
         [HttpGet("recommend")]
-        public async Task<ActionResult<List<UserResponse>>> Recommend([FromQuery] int skip, [FromQuery] int limit)
+        public async Task<ActionResult<List<UserResponse>>> Recommend([Range(5, 10)][FromQuery] int limit)
         {
             var recommendations = await Mediator.Send(new Recommend.Query
             {
                 UserId = HttpContext.GetFirebaseUserId(),
-                Skip = skip,
                 Limit = limit
             });
 

@@ -16,8 +16,6 @@ namespace Application.Users
         {
             public string UserId { get; set; }
 
-            public int Skip { get; set; }
-
             public int Limit { get; set; }
         }
 
@@ -65,7 +63,6 @@ namespace Application.Users
                         select user
                     )
                     .OrderBy(user => user.Id)
-                    .Skip(request.Skip)
                     .Take(request.Limit)
                     .ToListAsync();
 
@@ -113,7 +110,6 @@ namespace Application.Users
                     )
                     .OrderByDescending(obj => obj.Score)
                     .Select(obj => obj.User)
-                    .Skip(request.Skip)
                     .Take(request.Limit)
                     .ToListAsync();
 

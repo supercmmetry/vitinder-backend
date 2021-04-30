@@ -80,5 +80,9 @@ namespace Domain
         public String Sex { get; set; }
 
         public String SexualOrientation { get; set; }
+        
+        public ICollection<PassionResponse> Passions { get; set; }
+
+        public ICollection<HateResponse> Hates { get; set; }
     }
 }
