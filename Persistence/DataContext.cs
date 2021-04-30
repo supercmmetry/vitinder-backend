@@ -28,8 +28,7 @@ namespace Persistence
                 entity.HasCheckConstraint(
                     "CK_ValidSexualOrientationValue",
                     "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian'," +
-                    "'Bisexual', 'Asexual', 'Demisexual', 'Pansexual', 'Queer'," +
-                    " 'Bicurious', 'Aromantic')"
+                    "'Bisexual', 'Transgender', 'Queer')"
                     )
                 );
         }

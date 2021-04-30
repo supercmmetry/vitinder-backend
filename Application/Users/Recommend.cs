@@ -40,35 +40,60 @@ namespace Application.Users
 
                 var matchingUsers = (
                         from user in _context.Users
+                        where user.Id != currentUser.Id
+                        where !(
+                            from match in _context.Matches
+                            where match.UserId == currentUser.Id && match.OtherId == user.Id
+                            select new { }
+                        ).Any()
+                        where (currentUser.SexualOrientation == "Straight" && user.SexualOrientation == "Straight" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Gay" && user.SexualOrientation == "Gay" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Lesbian" && user.SexualOrientation == "Lesbian" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Bisexual" && (currentUser.Sex == "Male" &&
+                                                                               user.SexualOrientation == "Gay") ||
+                               (currentUser.Sex == "Female" &&
+                                user.SexualOrientation == "Lesbian") || user.SexualOrientation == "Straight" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Transgender" &&
+                               user.SexualOrientation == "Transgender")
                         join match in _context.Matches on user.Id equals match.UserId
                         where match.OtherId == currentUser.Id && match.Status
-                        where !(
-                            from unlikedUser in _context.Users
-                            join mismatch in _context.Matches on unlikedUser.Id equals mismatch.OtherId
-                            where mismatch.UserId == currentUser.Id && !mismatch.Status
-                            select unlikedUser.Id
-                        ).Contains(user.Id)
                         select user
                     )
+                    .OrderBy(user => user.Id)
                     .Skip(request.Skip)
                     .Take(request.Limit)
                     .ToListAsync();
 
                 var potentialUsers = (
                         from user in _context.Users
-                        join match in _context.Matches on user.Id equals match.UserId into matches
-                        from match in matches.DefaultIfEmpty(new Match
-                        {
-                            Status = true,
-                            OtherId = currentUser.Id
-                        })
-                        where match.OtherId == currentUser.Id && match.Status
+                        where user.Id != currentUser.Id
                         where !(
-                            from unlikedUser in _context.Users
-                            join mismatch in _context.Matches on unlikedUser.Id equals mismatch.OtherId
-                            where mismatch.UserId == currentUser.Id && !mismatch.Status
-                            select unlikedUser.Id
-                        ).Contains(user.Id)
+                            from match in _context.Matches
+                            where match.UserId == currentUser.Id && match.OtherId == user.Id
+                            select new { }
+                        ).Any()
+                        where (currentUser.SexualOrientation == "Straight" && user.SexualOrientation == "Straight" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Gay" && user.SexualOrientation == "Gay" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Lesbian" && user.SexualOrientation == "Lesbian" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Bisexual" && (currentUser.Sex == "Male" &&
+                                                                               user.SexualOrientation == "Gay") ||
+                               (currentUser.Sex == "Female" &&
+                                user.SexualOrientation == "Lesbian") || user.SexualOrientation == "Straight" ||
+                               user.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Queer") ||
+                              (currentUser.SexualOrientation == "Transgender" &&
+                               user.SexualOrientation == "Transgender")
+                        join match in _context.Matches on user.Id equals match.UserId into matches
+                        from match in matches.DefaultIfEmpty()
+                        where match == null
                         select new
                         {
                             User = user,
@@ -99,7 +124,7 @@ namespace Application.Users
                 {
                     recommendations
                         .AddRange(users[1]
-                        .GetRange(0, Math.Min(request.Limit - recommendations.Count, users[1].Count)));
+                            .GetRange(0, Math.Min(request.Limit - recommendations.Count, users[1].Count)));
                 }
 
                 return recommendations;
