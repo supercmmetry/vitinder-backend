@@ -15,6 +15,7 @@ namespace Api.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            services.AddSingleton(config);
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddMvc(options => { options.Filters.Add(new ValidationFilter()); });
 

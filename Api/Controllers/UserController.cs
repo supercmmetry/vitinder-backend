@@ -63,6 +63,22 @@ namespace Api.Controllers
         {
             return Mapper.Map<User, UserResponse>(HttpContext.GetUser());
         }
+        
+        [Authorize]
+        [RequireAccess(Access.Common)]
+        [HttpPatch("me")]
+        public async Task<IActionResult> UpdateMe(UserRequest userRequest)
+        {
+            var currentUser = HttpContext.GetUser();
+            Mapper.Map(userRequest, currentUser);
+
+            await Mediator.Send(new Update.Command
+            {
+                User = currentUser
+            });
+            
+            return Ok();
+        }
 
         [Authorize]
         [RequireAccess(Access.Anonymous)]
@@ -81,11 +97,11 @@ namespace Api.Controllers
         [Authorize]
         [RequireAccess(Access.Common)]
         [HttpGet("recommend")]
-        public async Task<ActionResult<List<UserResponse>>> Recommend([Range(1, 128)][FromQuery] int limit)
+        public async Task<ActionResult<List<UserResponse>>> Recommend([Range(1, 10)][FromQuery] int limit)
         {
             var recommendations = await Mediator.Send(new Recommend.Query
             {
-                UserId = HttpContext.GetUserId(),
+                User = HttpContext.GetUser(),
                 Limit = limit
             });
 
@@ -100,8 +116,9 @@ namespace Api.Controllers
         {
             await Mediator.Send(new AddToUser.Command
             {
-                UserId = HttpContext.GetUserId(),
-                File = HttpContext.GetValidatedFile("ProfilePicture")
+                User = HttpContext.GetUser(),
+                File = HttpContext.GetValidatedFile("ProfilePicture"),
+                Folder = Configuration["Cloudinary:Folders:ProfileImages"]
             });
             
             return Ok();

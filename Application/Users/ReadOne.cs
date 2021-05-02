@@ -29,6 +29,9 @@ namespace Application.Users
                 return await _context.Users
                     .Where(user => user.Id == request.Id)
                     .Include(user => user.Passions)
+                    .Include(user => user.Hates)
+                    .Include(user => user.ProfileImage)
+                    .AsSplitQuery()
                     .FirstAsync();
             }
         }

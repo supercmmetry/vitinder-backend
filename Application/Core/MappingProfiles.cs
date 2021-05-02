@@ -55,6 +55,7 @@ namespace Application.Core
             CreateHateMaps();
             CreateMatchMaps();
             CreateDateMaps();
+            CreateCloudinaryImageMaps();
         }
     }
 }

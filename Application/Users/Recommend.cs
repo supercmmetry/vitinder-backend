@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Matches;
 using Domain;
+using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -14,7 +17,7 @@ namespace Application.Users
     {
         public class Query : IRequest<List<User>>
         {
-            public string UserId { get; set; }
+            public User User { get; set; }
 
             public int Limit { get; set; }
         }
@@ -28,36 +31,54 @@ namespace Application.Users
                 _context = context;
             }
 
+            private static Expression<Func<User, User, bool>> IsSexualMatch()
+            {
+                const string straight = "Straight";
+                const string lesbian = "Lesbian";
+                const string gay = "Gay";
+                const string bisexual = "Bisexual";
+                const string trans = "Transgender";
+                const string queer = "Queer";
+                const string male = "Male";
+                const string female = "Female";
+
+                return (me, other) =>
+                    me.SexualOrientation == straight && other.SexualOrientation == straight && me.Sex == male &&
+                        other.Sex == female ||
+                        me.SexualOrientation == straight && other.SexualOrientation == straight && me.Sex == female &&
+                        other.Sex == male ||
+                        me.SexualOrientation == lesbian && other.SexualOrientation == lesbian && me.Sex == female &&
+                        other.Sex == female ||
+                        me.SexualOrientation == gay && other.SexualOrientation == gay && me.Sex == male &&
+                        other.Sex == male ||
+                        me.SexualOrientation == queer && other.SexualOrientation != straight ||
+                        me.SexualOrientation == bisexual && other.SexualOrientation == straight && me.Sex == male &&
+                        other.Sex == female ||
+                        me.SexualOrientation == bisexual && other.SexualOrientation == straight && me.Sex == female &&
+                        other.Sex == male ||
+                        me.SexualOrientation == bisexual && other.SexualOrientation == lesbian && me.Sex == female &&
+                        other.Sex == female ||
+                        me.SexualOrientation == bisexual && other.SexualOrientation == gay && me.Sex == male &&
+                        other.Sex == male ||
+                        me.SexualOrientation == bisexual && other.SexualOrientation == bisexual ||
+                        me.SexualOrientation == bisexual && other.SexualOrientation == queer ||
+                        me.SexualOrientation == trans && other.SexualOrientation == trans ||
+                        me.SexualOrientation == trans && other.SexualOrientation == queer;
+            }
+
             public async Task<List<User>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var currentUser = await _context.Users
-                    .Include(user => user.Passions)
-                    .Include(user => user.Hates)
-                    .Where(user => user.Id == request.UserId)
-                    .FirstAsync();
+                var currentUser = request.User;
 
                 var matchingUsers = (
-                        from user in _context.Users
+                        from user in _context.Users.AsExpandable()
                         where user.Id != currentUser.Id
                         where !(
                             from match in _context.Matches
                             where match.UserId == currentUser.Id && match.OtherId == user.Id
                             select new { }
                         ).Any()
-                        where (currentUser.SexualOrientation == "Straight" && user.SexualOrientation == "Straight" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Gay" && user.SexualOrientation == "Gay" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Lesbian" && user.SexualOrientation == "Lesbian" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Bisexual" && (currentUser.Sex == "Male" &&
-                                                                               user.SexualOrientation == "Gay") ||
-                               (currentUser.Sex == "Female" &&
-                                user.SexualOrientation == "Lesbian") || user.SexualOrientation == "Straight" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Transgender" &&
-                               user.SexualOrientation == "Transgender")
+                        where IsSexualMatch().Invoke(currentUser, user)
                         join match in _context.Matches on user.Id equals match.UserId
                         where match.OtherId == currentUser.Id && match.Status
                         select user
@@ -67,27 +88,14 @@ namespace Application.Users
                     .ToListAsync();
 
                 var potentialUsers = (
-                        from user in _context.Users
+                        from user in _context.Users.AsExpandable()
                         where user.Id != currentUser.Id
                         where !(
                             from match in _context.Matches
                             where match.UserId == currentUser.Id && match.OtherId == user.Id
                             select new { }
                         ).Any()
-                        where (currentUser.SexualOrientation == "Straight" && user.SexualOrientation == "Straight" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Gay" && user.SexualOrientation == "Gay" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Lesbian" && user.SexualOrientation == "Lesbian" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Bisexual" && (currentUser.Sex == "Male" &&
-                                                                               user.SexualOrientation == "Gay") ||
-                               (currentUser.Sex == "Female" &&
-                                user.SexualOrientation == "Lesbian") || user.SexualOrientation == "Straight" ||
-                               user.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Queer") ||
-                              (currentUser.SexualOrientation == "Transgender" &&
-                               user.SexualOrientation == "Transgender")
+                        where IsSexualMatch().Invoke(currentUser, user)
                         join match in _context.Matches on user.Id equals match.UserId into matches
                         from match in matches.DefaultIfEmpty()
                         where match == null

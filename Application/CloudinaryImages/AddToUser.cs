@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper.Configuration;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Domain;
@@ -15,9 +16,11 @@ namespace Application.CloudinaryImages
     {
         public class Command : IRequest
         {
-            public string UserId { get; set; }
+            public User User { get; set; }
             
             public IFormFile File { get; set; }
+            
+            public string Folder { get; set; }
         }
 
         public class Handler : IRequestHandler<Command>
@@ -33,10 +36,7 @@ namespace Application.CloudinaryImages
             
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var currentUser = await _context.Users
-                    .Include(user => user.ProfileImage)
-                    .Where(user => user.Id == request.UserId)
-                    .FirstAsync();
+                var currentUser = request.User;
 
                 if (currentUser.ProfileImage != null)
                 {
@@ -52,10 +52,12 @@ namespace Application.CloudinaryImages
                         var result = await _cloudinary.UploadAsync(new ImageUploadParams
                         {
                             File = new FileDescription(request.File.Name, stream),
-                            Transformation = new Transformation()           //  *
-                                .Width(512).Height(512)
+                            Transformation = new Transformation()
+                                .Width(512)
+                                .Height(512)
                                 .Crop("fill")
-                                .Gravity("face")
+                                .Gravity("face"),
+                            Folder = request.Folder
                         });
 
                         currentUser.ProfileImage = new CloudinaryImage
