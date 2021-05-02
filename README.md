@@ -23,7 +23,10 @@ Uses cloudinary for image hosting
   "Cloudinary": {
     "CloudName": "cloudinary-cloud-name",
     "ApiKey": "cloudinary-api-key",
-    "ApiSecret": "cloudinary-api-secret"
+    "ApiSecret": "cloudinary-api-secret",
+    "Folders": {
+      "ProfileImages": "cloudinary-folder-for-profile-pics"
+    }
   },
   "JwtBearerOptions": {
     "Authority": "https://securetoken.google.com/<firebase-project-id>",
