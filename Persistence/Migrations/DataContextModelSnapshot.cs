@@ -19,6 +19,32 @@ namespace Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+            modelBuilder.Entity("Domain.Date", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("OtherId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("UserId", "OtherId");
+
+                    b.HasIndex("OtherId");
+
+                    b.ToTable("Dates");
+                });
+
             modelBuilder.Entity("Domain.Hate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -54,9 +80,9 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OtherId");
+                    b.HasAlternateKey("UserId", "OtherId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("OtherId", "Status");
 
                     b.ToTable("Matches");
                 });
@@ -101,6 +127,10 @@ namespace Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -121,11 +151,23 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Age");
+
+                    b.HasIndex("FieldOfStudy");
+
+                    b.HasIndex("Sex");
+
+                    b.HasIndex("SexualOrientation");
+
+                    b.HasIndex("YearOfStudy");
+
                     b.ToTable("Users");
 
                     b.HasCheckConstraint("CK_ValidSexValue", "\"Sex\" in ('Male', 'Female', 'Other')");
 
-                    b.HasCheckConstraint("CK_ValidSexualOrientationValue", "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian','Bisexual', 'Asexual', 'Demisexual', 'Pansexual', 'Queer', 'Bicurious', 'Aromantic')");
+                    b.HasCheckConstraint("CK_ValidSexualOrientationValue", "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian','Bisexual', 'Transgender', 'Queer')");
+
+                    b.HasCheckConstraint("CK_ValidAgeValue", "\"Age\" >= 16 and \"Age\" <= 100");
                 });
 
             modelBuilder.Entity("HateUser", b =>
@@ -156,6 +198,25 @@ namespace Persistence.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("PassionUser");
+                });
+
+            modelBuilder.Entity("Domain.Date", b =>
+                {
+                    b.HasOne("Domain.User", "Other")
+                        .WithMany()
+                        .HasForeignKey("OtherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Other");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Match", b =>

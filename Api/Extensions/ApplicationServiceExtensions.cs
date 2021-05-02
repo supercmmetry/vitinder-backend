@@ -14,6 +14,7 @@ namespace Api.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            services.AddRouting(options => options.LowercaseUrls = true);
             services.AddMvc(options =>
             {
                 options.Filters.Add(new ValidationFilter());
@@ -51,6 +52,7 @@ namespace Api.Extensions
             services.AddPassionServices(config);
             services.AddHateServices(config);
             services.AddMatchServices(config);
+            services.AddDateServices(config);
 
             return services;
         }

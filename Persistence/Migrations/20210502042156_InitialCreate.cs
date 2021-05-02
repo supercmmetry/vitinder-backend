@@ -41,6 +41,7 @@ namespace Persistence.Migrations
                     Sex = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     SexualOrientation = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     Age = table.Column<int>(type: "integer", nullable: false),
+                    ImageUrl = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     FieldOfStudy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     YearOfStudy = table.Column<int>(type: "integer", nullable: false),
                     Bio = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
@@ -50,7 +51,35 @@ namespace Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.CheckConstraint("CK_ValidSexValue", "\"Sex\" in ('Male', 'Female', 'Other')");
-                    table.CheckConstraint("CK_ValidSexualOrientationValue", "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian','Bisexual', 'Asexual', 'Demisexual', 'Pansexual', 'Queer', 'Bicurious', 'Aromantic')");
+                    table.CheckConstraint("CK_ValidSexualOrientationValue", "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian','Bisexual', 'Transgender', 'Queer')");
+                    table.CheckConstraint("CK_ValidAgeValue", "\"Age\" >= 16 and \"Age\" <= 100");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    OtherId = table.Column<string>(type: "text", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dates", x => x.Id);
+                    table.UniqueConstraint("AK_Dates_UserId_OtherId", x => new { x.UserId, x.OtherId });
+                    table.ForeignKey(
+                        name: "FK_Dates_Users_OtherId",
+                        column: x => x.OtherId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dates_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,6 +118,7 @@ namespace Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Matches", x => x.Id);
+                    table.UniqueConstraint("AK_Matches_UserId_OtherId", x => new { x.UserId, x.OtherId });
                     table.ForeignKey(
                         name: "FK_Matches_Users_OtherId",
                         column: x => x.OtherId,
@@ -128,28 +158,56 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dates_OtherId",
+                table: "Dates",
+                column: "OtherId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_HateUser_UsersId",
                 table: "HateUser",
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_OtherId",
+                name: "IX_Matches_OtherId_Status",
                 table: "Matches",
-                column: "OtherId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Matches_UserId",
-                table: "Matches",
-                column: "UserId");
+                columns: new[] { "OtherId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PassionUser_UsersId",
                 table: "PassionUser",
                 column: "UsersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Age",
+                table: "Users",
+                column: "Age");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_FieldOfStudy",
+                table: "Users",
+                column: "FieldOfStudy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Sex",
+                table: "Users",
+                column: "Sex");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_SexualOrientation",
+                table: "Users",
+                column: "SexualOrientation");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_YearOfStudy",
+                table: "Users",
+                column: "YearOfStudy");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Dates");
+
             migrationBuilder.DropTable(
                 name: "HateUser");
 

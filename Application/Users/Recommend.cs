@@ -95,17 +95,21 @@ namespace Application.Users
                         {
                             User = user,
                             Score = (
-                                        from passion in _context.Passions
-                                            .Include(passion => passion.Users)
-                                        where passion.Users.Contains(currentUser) && passion.Users.Contains(user)
-                                        select new { }
-                                    ).Count() +
-                                    (
-                                        from hate in _context.Hates
-                                            .Include(hate => hate.Users)
-                                        where hate.Users.Contains(currentUser) && hate.Users.Contains(user)
-                                        select new { }
-                                    ).Count()
+                                    from passion in _context.Passions
+                                        .Include(passion => passion.Users)
+                                    where passion.Users.Contains(currentUser) && passion.Users.Contains(user)
+                                    select new { }
+                                ).Count() +
+                                (
+                                    from hate in _context.Hates
+                                        .Include(hate => hate.Users)
+                                    where hate.Users.Contains(currentUser) && hate.Users.Contains(user)
+                                    select new { }
+                                ).Count() +
+                                user.FieldOfStudy == currentUser.FieldOfStudy ? 2 :
+                                0 +
+                                user.YearOfStudy == currentUser.YearOfStudy ? 2 : 0
+                                - Math.Abs(user.Age - currentUser.Age) / 2
                         }
                     )
                     .OrderByDescending(obj => obj.Score)

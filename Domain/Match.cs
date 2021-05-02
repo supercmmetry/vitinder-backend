@@ -18,8 +18,6 @@ namespace Domain
     
     public class MatchRequest
     {
-        [Required] public string UserId { get; set; }
-        
         [Required] public string OtherId { get; set; }
 
         [Required] public bool Status { get; set; }

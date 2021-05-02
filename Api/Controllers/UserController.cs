@@ -62,7 +62,7 @@ namespace Api.Controllers
 
         [Authorize]
         [RequireAccess(Access.Anonymous)]
-        [HttpPost("signup")]
+        [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp(UserRequest userRequest)
         {
             var user = Mapper.Map<UserRequest, User>(userRequest);
@@ -77,7 +77,7 @@ namespace Api.Controllers
         [Authorize]
         [RequireAccess(Access.Common)]
         [HttpGet("recommend")]
-        public async Task<ActionResult<List<UserResponse>>> Recommend([Range(5, 10)][FromQuery] int limit)
+        public async Task<ActionResult<List<UserResponse>>> Recommend([Range(1, 128)][FromQuery] int limit)
         {
             var recommendations = await Mediator.Send(new Recommend.Query
             {

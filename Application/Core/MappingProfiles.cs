@@ -5,14 +5,14 @@ namespace Application.Core
 {
     public class MappingProfiles : Profile
     {
-        public void CreateUserMaps()
+        private void CreateUserMaps()
         {
             CreateMap<User, User>();
             CreateMap<UserRequest, User>();
             CreateMap<User, UserResponse>();
         }
-        
-        public void CreatePassionMaps()
+
+        private void CreatePassionMaps()
         {
             CreateMap<Passion, Passion>();
             CreateMap<PassionCreate, Passion>();
@@ -20,8 +20,8 @@ namespace Application.Core
             CreateMap<PassionRequest, Passion>();
             CreateMap<Passion, PassionResponse>();
         }
-        
-        public void CreateHateMaps()
+
+        private void CreateHateMaps()
         {
             CreateMap<Hate, Hate>();
             CreateMap<HateCreate, Hate>();
@@ -29,14 +29,17 @@ namespace Application.Core
             CreateMap<HateRequest, Hate>();
             CreateMap<Hate, HateResponse>();
         }
-        
-        public void CreateMatchMaps()
+
+        private void CreateMatchMaps()
         {
             CreateMap<Match, Match>();
             CreateMap<MatchRequest, Match>();
-            CreateMap<HateUpdate, Hate>();
-            CreateMap<HateRequest, Hate>();
-            CreateMap<Hate, HateResponse>();
+        }
+
+        private void CreateDateMaps()
+        {
+            CreateMap<Date, Date>();
+            CreateMap<Date, DateResponse>();
         }
 
         public MappingProfiles()
@@ -44,6 +47,8 @@ namespace Application.Core
             CreateUserMaps();
             CreatePassionMaps();
             CreateHateMaps();
+            CreateMatchMaps();
+            CreateDateMaps();
         }
     }
 }

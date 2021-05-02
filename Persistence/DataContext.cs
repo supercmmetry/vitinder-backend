@@ -1,6 +1,5 @@
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Persistence
 {
@@ -18,19 +17,52 @@ namespace Persistence
 
         public DbSet<Match> Matches { get; set; }
 
+        public DbSet<Date> Dates { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(entity =>
-                entity.HasCheckConstraint("CK_ValidSexValue", "\"Sex\" in ('Male', 'Female', 'Other')")
-            );
-
-            modelBuilder.Entity<User>(entity =>
-                entity.HasCheckConstraint(
+            modelBuilder.Entity<User>()
+                .HasCheckConstraint(
+                    "CK_ValidSexValue",
+                    "\"Sex\" in ('Male', 'Female', 'Other')"
+                )
+                .HasCheckConstraint(
                     "CK_ValidSexualOrientationValue",
                     "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian'," +
                     "'Bisexual', 'Transgender', 'Queer')"
-                    )
+                ).HasCheckConstraint(
+                    "CK_ValidAgeValue",
+                    "\"Age\" >= 16 and \"Age\" <= 100"
                 );
+
+            modelBuilder.Entity<User>().HasIndex(
+                user => user.Sex
+            );
+
+            modelBuilder.Entity<User>().HasIndex(
+                user => user.SexualOrientation
+            );
+
+            modelBuilder.Entity<User>().HasIndex(
+                user => user.FieldOfStudy
+            );
+
+            modelBuilder.Entity<User>().HasIndex(
+                user => user.YearOfStudy
+            );
+            
+            modelBuilder.Entity<User>().HasIndex(
+                user => user.Age
+            );
+
+            modelBuilder.Entity<Match>()
+                .HasAlternateKey(match => new {match.UserId, match.OtherId});
+            
+            modelBuilder.Entity<Match>()
+                .HasIndex(match => new {match.OtherId, match.Status});
+
+            modelBuilder.Entity<Date>()
+                .HasAlternateKey(date => new {date.UserId, date.OtherId});
         }
     }
 }

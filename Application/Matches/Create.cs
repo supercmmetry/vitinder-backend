@@ -1,7 +1,10 @@
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Matches
@@ -25,6 +28,25 @@ namespace Application.Matches
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 _context.Matches.Add(request.Match);
+                if (request.Match.Status)
+                {
+                    var inverseMatchExists = await _context.Matches
+                        .AnyAsync(
+                            match => match.UserId == request.Match.OtherId &&
+                                     match.OtherId == request.Match.UserId &&
+                                     match.Status
+                        );
+
+                    if (inverseMatchExists)
+                    {
+                        _context.Dates.Add(new Date
+                        {
+                            UserId = request.Match.UserId,
+                            OtherId = request.Match.OtherId,
+                            Timestamp = DateTime.Now
+                        });
+                    }
+                }
 
                 await _context.SaveChangesAsync();
 
