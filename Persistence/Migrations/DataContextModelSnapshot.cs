@@ -19,6 +19,20 @@ namespace Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+            modelBuilder.Entity("Domain.CloudinaryImage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CloudinaryImages");
+                });
+
             modelBuilder.Entity("Domain.Date", b =>
                 {
                     b.Property<Guid>("Id")
@@ -127,14 +141,13 @@ namespace Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("ProfileImageId")
+                        .HasColumnType("text");
 
                     b.Property<string>("Sex")
                         .IsRequired()
@@ -154,6 +167,8 @@ namespace Persistence.Migrations
                     b.HasIndex("Age");
 
                     b.HasIndex("FieldOfStudy");
+
+                    b.HasIndex("ProfileImageId");
 
                     b.HasIndex("Sex");
 
@@ -236,6 +251,15 @@ namespace Persistence.Migrations
                     b.Navigation("Other");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.User", b =>
+                {
+                    b.HasOne("Domain.CloudinaryImage", "ProfileImage")
+                        .WithMany()
+                        .HasForeignKey("ProfileImageId");
+
+                    b.Navigation("ProfileImage");
                 });
 
             modelBuilder.Entity("HateUser", b =>

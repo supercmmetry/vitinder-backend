@@ -2,11 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Threading.Tasks;
+using Application.Core;
 using Application.Users;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Newtonsoft.Json;
 
 namespace Api.Middlewares
 {
@@ -46,8 +51,7 @@ namespace Api.Middlewares
                 var claims = context.User.Claims.ToDictionary(claim => claim.Type);
 
                 var userId = claims.GetValueOrDefault("user_id")?.Value;
-
-
+                
                 var user = attribute.Access > Access.Anonymous
                     ? await mediator.Send(new ReadOne.Query {Id = userId})
                     : null;
@@ -55,12 +59,17 @@ namespace Api.Middlewares
                 if (user?.AccessLevel < (int) attribute.Access)
                 {
                     context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                    await context.Response.WriteAsync("");
+                    context.Response.ContentType = MediaTypeNames.Application.Json;
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponse
+                    {
+                        Metadata = ErrorMetadata.InsufficientAuthorization,
+                        Message = "The given operation requires " + attribute.Access
+                    }));
                     return;
                 }
 
-                context.Items["FirebaseUserId"] = userId;
-                context.Items["CurrentUser"] = user;
+                context.Items["UserId"] = userId;
+                context.Items["User"] = user;
             }
 
             await _next(context);

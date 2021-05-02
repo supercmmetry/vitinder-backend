@@ -18,6 +18,8 @@ namespace Persistence
         public DbSet<Match> Matches { get; set; }
 
         public DbSet<Date> Dates { get; set; }
+        
+        public DbSet<CloudinaryImage> CloudinaryImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

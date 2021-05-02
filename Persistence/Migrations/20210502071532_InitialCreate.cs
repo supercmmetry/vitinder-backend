@@ -8,6 +8,18 @@ namespace Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "CloudinaryImages",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CloudinaryImages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Hates",
                 columns: table => new
                 {
@@ -41,11 +53,11 @@ namespace Persistence.Migrations
                     Sex = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     SexualOrientation = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     Age = table.Column<int>(type: "integer", nullable: false),
-                    ImageUrl = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     FieldOfStudy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     YearOfStudy = table.Column<int>(type: "integer", nullable: false),
                     Bio = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    AccessLevel = table.Column<int>(type: "integer", nullable: false)
+                    AccessLevel = table.Column<int>(type: "integer", nullable: false),
+                    ProfileImageId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -53,6 +65,12 @@ namespace Persistence.Migrations
                     table.CheckConstraint("CK_ValidSexValue", "\"Sex\" in ('Male', 'Female', 'Other')");
                     table.CheckConstraint("CK_ValidSexualOrientationValue", "\"SexualOrientation\" in ('Straight', 'Gay', 'Lesbian','Bisexual', 'Transgender', 'Queer')");
                     table.CheckConstraint("CK_ValidAgeValue", "\"Age\" >= 16 and \"Age\" <= 100");
+                    table.ForeignKey(
+                        name: "FK_Users_CloudinaryImages_ProfileImageId",
+                        column: x => x.ProfileImageId,
+                        principalTable: "CloudinaryImages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,6 +206,11 @@ namespace Persistence.Migrations
                 column: "FieldOfStudy");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_ProfileImageId",
+                table: "Users",
+                column: "ProfileImageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Sex",
                 table: "Users",
                 column: "Sex");
@@ -225,6 +248,9 @@ namespace Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "CloudinaryImages");
         }
     }
 }

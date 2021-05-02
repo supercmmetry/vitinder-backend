@@ -16,10 +16,10 @@ namespace Api.Controllers
         [HttpGet("by-user")]
         public async Task<ActionResult<List<DateResponse>>> GetDatesByUser([FromQuery] int skip, [FromQuery] int limit)
         {
-            var currentUser = HttpContext.GetCurrentUser();
+            var currentUser = HttpContext.GetUser();
             var dates = await Mediator.Send(new ReadManyByUser.Query
             {
-                UserId = HttpContext.GetFirebaseUserId(),
+                UserId = HttpContext.GetUserId(),
                 Skip = skip,
                 Limit = limit
             });

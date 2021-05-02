@@ -1,12 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Threading.Tasks;
 using Api.Extensions;
 using Api.Middlewares;
+using Application.CloudinaryImages;
 using Application.Users;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace Api.Controllers
 {
@@ -55,9 +59,9 @@ namespace Api.Controllers
         [Authorize]
         [RequireAccess(Access.Common)]
         [HttpGet("me")]
-        public ActionResult<UserResponse> GetCurrentUser()
+        public ActionResult<UserResponse> GetMe()
         {
-            return Mapper.Map<User, UserResponse>(HttpContext.GetCurrentUser());
+            return Mapper.Map<User, UserResponse>(HttpContext.GetUser());
         }
 
         [Authorize]
@@ -67,7 +71,7 @@ namespace Api.Controllers
         {
             var user = Mapper.Map<UserRequest, User>(userRequest);
             
-            user.Id = HttpContext.GetFirebaseUserId();
+            user.Id = HttpContext.GetUserId();
             user.AccessLevel = (int) Access.Common;
             
             await Mediator.Send(new Create.Command {User = user});
@@ -81,11 +85,26 @@ namespace Api.Controllers
         {
             var recommendations = await Mediator.Send(new Recommend.Query
             {
-                UserId = HttpContext.GetFirebaseUserId(),
+                UserId = HttpContext.GetUserId(),
                 Limit = limit
             });
 
             return Mapper.Map<List<User>, List<UserResponse>>(recommendations);
+        }
+
+        [Authorize]
+        [RequireAccess(Access.Common)]
+        [ValidateFile("ProfilePicture", 10485760, "png", "jpg", "jpeg")]
+        [HttpPost("profile-pic")]
+        public async Task<IActionResult> AddProfilePic()
+        {
+            await Mediator.Send(new AddToUser.Command
+            {
+                UserId = HttpContext.GetUserId(),
+                File = HttpContext.GetValidatedFile("ProfilePicture")
+            });
+            
+            return Ok();
         }
     }
 }

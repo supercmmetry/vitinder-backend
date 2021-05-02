@@ -16,7 +16,7 @@ namespace Api.Controllers
         public async Task<IActionResult> CreateMatchByUser(MatchRequest matchRequest)
         {
             var match = Mapper.Map<MatchRequest, Match>(matchRequest);
-            match.UserId = HttpContext.GetFirebaseUserId();
+            match.UserId = HttpContext.GetUserId();
 
             await Mediator.Send(new Create.Command
             {

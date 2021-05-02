@@ -17,8 +17,6 @@ namespace Domain
         [StringLength(32)] [Required] public string SexualOrientation { get; set; }
 
         [Range(16, 100)] [Required] public int Age { get; set; }
-        
-        [Url] [StringLength(512)] public string ImageUrl { get; set; }
 
         [StringLength(64)] public string FieldOfStudy { get; set; }
 
@@ -31,6 +29,8 @@ namespace Domain
         public ICollection<Passion> Passions { get; set; }
 
         public ICollection<Hate> Hates { get; set; }
+        
+        public CloudinaryImage ProfileImage { get; set; }
     }
 
     public class UserRequest
@@ -64,8 +64,6 @@ namespace Domain
 
         public string SexualOrientation { get; set; }
         
-        public string ImageUrl { get; set; }
-
         public string FieldOfStudy { get; set; }
 
         public int YearOfStudy { get; set; }
@@ -75,5 +73,7 @@ namespace Domain
         public ICollection<PassionResponse> Passions { get; set; }
 
         public ICollection<HateResponse> Hates { get; set; }
+        
+        public CloudinaryImageResponse ProfileImage { get; set; }
     }
 }

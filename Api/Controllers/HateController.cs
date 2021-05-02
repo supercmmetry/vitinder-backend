@@ -61,7 +61,7 @@ namespace Api.Controllers
         {
             return Ok(await Mediator.Send(new SetInUser.Command
             {
-                UserId = HttpContext.GetFirebaseUserId(),
+                UserId = HttpContext.GetUserId(),
                 Hates = Mapper.Map<List<HateRequest>, List<Hate>>(hates)
             }));
         }

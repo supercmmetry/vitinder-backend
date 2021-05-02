@@ -47,6 +47,8 @@ namespace Api
 
             app.UseMiddleware<AccessMiddleware>();
 
+            app.UseMiddleware<ValidateFileMiddleware>();
+
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

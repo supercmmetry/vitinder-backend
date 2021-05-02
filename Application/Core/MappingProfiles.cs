@@ -42,6 +42,12 @@ namespace Application.Core
             CreateMap<Date, DateResponse>();
         }
 
+        private void CreateCloudinaryImageMaps()
+        {
+            CreateMap<CloudinaryImage, CloudinaryImage>();
+            CreateMap<CloudinaryImage, CloudinaryImageResponse>();
+        }
+
         public MappingProfiles()
         {
             CreateUserMaps();

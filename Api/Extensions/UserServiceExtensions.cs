@@ -1,3 +1,4 @@
+using Application.CloudinaryImages;
 using Application.Users;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ namespace Api.Extensions
             services.AddMediatR(typeof(Update.Handler));
             services.AddMediatR(typeof(Delete.Handler));
             services.AddMediatR(typeof(Recommend.Handler));
+            services.AddMediatR(typeof(AddToUser.Handler));
             return services;
         }
     }

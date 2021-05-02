@@ -13,14 +13,19 @@ namespace Api.Extensions
             return value;
         }
 
-        public static string GetFirebaseUserId(this HttpContext context)
+        public static string GetUserId(this HttpContext context)
         {
-            return context.Items.GetOrDefault("FirebaseUserId") as string;
+            return context.Items.GetOrDefault("UserId") as string;
         }
 
-        public static User GetCurrentUser(this HttpContext context)
+        public static User GetUser(this HttpContext context)
         {
-            return context.Items.GetOrDefault("CurrentUser") as User;
+            return context.Items.GetOrDefault("User") as User;
+        }
+
+        public static IFormFile GetValidatedFile(this HttpContext context, string name)
+        {
+            return (context.Items["ValidatedFiles"] as IFormFileCollection)?.GetFile(name);
         }
     }
 }
