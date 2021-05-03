@@ -39,6 +39,7 @@ namespace Application.Matches
 
                     if (inverseMatchExists)
                     {
+                        // todo: FCM
                         _context.Dates.Add(new Date
                         {
                             UserId = request.Match.UserId,

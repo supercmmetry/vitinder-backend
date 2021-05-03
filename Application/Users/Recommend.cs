@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Matches;
 using Domain;
 using LinqKit;
 using MediatR;
@@ -44,33 +43,44 @@ namespace Application.Users
 
                 return (me, other) =>
                     me.SexualOrientation == straight && other.SexualOrientation == straight && me.Sex == male &&
-                        other.Sex == female ||
-                        me.SexualOrientation == straight && other.SexualOrientation == straight && me.Sex == female &&
-                        other.Sex == male ||
-                        me.SexualOrientation == lesbian && other.SexualOrientation == lesbian && me.Sex == female &&
-                        other.Sex == female ||
-                        me.SexualOrientation == gay && other.SexualOrientation == gay && me.Sex == male &&
-                        other.Sex == male ||
-                        me.SexualOrientation == queer && other.SexualOrientation != straight ||
-                        me.SexualOrientation == bisexual && other.SexualOrientation == straight && me.Sex == male &&
-                        other.Sex == female ||
-                        me.SexualOrientation == bisexual && other.SexualOrientation == straight && me.Sex == female &&
-                        other.Sex == male ||
-                        me.SexualOrientation == bisexual && other.SexualOrientation == lesbian && me.Sex == female &&
-                        other.Sex == female ||
-                        me.SexualOrientation == bisexual && other.SexualOrientation == gay && me.Sex == male &&
-                        other.Sex == male ||
-                        me.SexualOrientation == bisexual && other.SexualOrientation == bisexual ||
-                        me.SexualOrientation == bisexual && other.SexualOrientation == queer ||
-                        me.SexualOrientation == trans && other.SexualOrientation == trans ||
-                        me.SexualOrientation == trans && other.SexualOrientation == queer;
+                    other.Sex == female ||
+                    me.SexualOrientation == straight && other.SexualOrientation == straight && me.Sex == female &&
+                    other.Sex == male ||
+                    me.SexualOrientation == lesbian && other.SexualOrientation == lesbian && me.Sex == female &&
+                    other.Sex == female ||
+                    me.SexualOrientation == gay && other.SexualOrientation == gay && me.Sex == male &&
+                    other.Sex == male ||
+                    me.SexualOrientation == queer && other.SexualOrientation != straight ||
+                    me.SexualOrientation == bisexual && other.SexualOrientation == straight && me.Sex == male &&
+                    other.Sex == female ||
+                    me.SexualOrientation == bisexual && other.SexualOrientation == straight && me.Sex == female &&
+                    other.Sex == male ||
+                    me.SexualOrientation == bisexual && other.SexualOrientation == lesbian && me.Sex == female &&
+                    other.Sex == female ||
+                    me.SexualOrientation == bisexual && other.SexualOrientation == gay && me.Sex == male &&
+                    other.Sex == male ||
+                    me.SexualOrientation == bisexual && other.SexualOrientation == bisexual ||
+                    me.SexualOrientation == bisexual && other.SexualOrientation == queer ||
+                    me.SexualOrientation == trans && other.SexualOrientation == trans ||
+                    me.SexualOrientation == trans && other.SexualOrientation == queer;
+            }
+
+            private static Expression<Func<User, User, int>> ScoreBias()
+            {
+                return (user, other) => (user.FieldOfStudy == other.FieldOfStudy ? 2 : 0) +
+                                        (user.YearOfStudy == other.YearOfStudy ? 1 : 0) +
+                                        (user.FieldOfStudy == other.FieldOfStudy &&
+                                         user.YearOfStudy == other.YearOfStudy
+                                            ? 2
+                                            : 0)
+                                        - Math.Abs(user.Age - other.Age);
             }
 
             public async Task<List<User>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var currentUser = request.User;
 
-                var matchingUsers = (
+                var matchingUserIds = (
                         from user in _context.Users.AsExpandable()
                         where user.Id != currentUser.Id
                         where !(
@@ -84,10 +94,11 @@ namespace Application.Users
                         select user
                     )
                     .OrderBy(user => user.Id)
+                    .Select(user => user.Id)
                     .Take(request.Limit)
                     .ToListAsync();
 
-                var potentialUsers = (
+                var potentialUserIds = (
                         from user in _context.Users.AsExpandable()
                         where user.Id != currentUser.Id
                         where !(
@@ -103,39 +114,48 @@ namespace Application.Users
                         {
                             User = user,
                             Score = (
-                                    from passion in _context.Passions
-                                        .Include(passion => passion.Users)
-                                    where passion.Users.Contains(currentUser) && passion.Users.Contains(user)
-                                    select new { }
-                                ).Count() +
-                                (
-                                    from hate in _context.Hates
-                                        .Include(hate => hate.Users)
-                                    where hate.Users.Contains(currentUser) && hate.Users.Contains(user)
-                                    select new { }
-                                ).Count() +
-                                user.FieldOfStudy == currentUser.FieldOfStudy ? 2 :
-                                0 +
-                                user.YearOfStudy == currentUser.YearOfStudy ? 2 : 0
-                                - Math.Abs(user.Age - currentUser.Age) / 2
+                                        from passion in _context.Passions
+                                            .Include(passion => passion.Users)
+                                        where passion.Users.Contains(currentUser) && passion.Users.Contains(user)
+                                        select new { }
+                                    ).Count() * 2 +
+                                    (
+                                        from hate in _context.Hates
+                                            .Include(hate => hate.Users)
+                                        where hate.Users.Contains(currentUser) && hate.Users.Contains(user)
+                                        select new { }
+                                    ).Count() * 2 +
+                                    ScoreBias().Invoke(currentUser, user)
                         }
                     )
                     .OrderByDescending(obj => obj.Score)
-                    .Select(obj => obj.User)
                     .Take(request.Limit)
+                    .Select(obj => obj.User.Id)
                     .ToListAsync();
 
-                var users = await Task.WhenAll(matchingUsers, potentialUsers);
-                var recommendations = users[0];
+                var userIds = await Task.WhenAll(matchingUserIds, potentialUserIds);
+                var recommendationIds = userIds[0];
 
-                if (recommendations.Count < request.Limit)
+                if (recommendationIds.Count < request.Limit)
                 {
-                    recommendations
-                        .AddRange(users[1]
-                            .GetRange(0, Math.Min(request.Limit - recommendations.Count, users[1].Count)));
+                    recommendationIds
+                        .AddRange(userIds[1]
+                            .GetRange(0, Math.Min(request.Limit - recommendationIds.Count, userIds[1].Count)));
                 }
 
-                return recommendations;
+                var recommendations = await _context.Users
+                    .Include(user => user.Passions)
+                    .Include(user => user.Hates)
+                    .Include(user => user.ProfileImage)
+                    .AsSplitQuery()
+                    .Where(user => recommendationIds.Contains(user.Id))
+                    .ToListAsync();
+
+                var recommendationMap = new Dictionary<string, User>();
+
+                recommendations.ForEach(user => recommendationMap[user.Id] = user);
+                
+                return recommendationIds.Select(id => recommendationMap[id]).ToList();
             }
         }
     }

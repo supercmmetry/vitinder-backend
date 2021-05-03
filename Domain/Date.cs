@@ -34,8 +34,6 @@ namespace Domain
     {
         public Guid Id { get; set; }
 
-        public UserResponse User { get; set; }
-
         public UserResponse Other { get; set; }
     }
 }
