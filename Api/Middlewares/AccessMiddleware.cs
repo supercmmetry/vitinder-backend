@@ -63,7 +63,7 @@ namespace Api.Middlewares
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponse
                     {
                         Metadata = ErrorMetadata.InsufficientAuthorization,
-                        Message = "The given operation requires " + attribute.Access
+                        Message = "The given operation requires access-level: " + attribute.Access
                     }));
                     return;
                 }

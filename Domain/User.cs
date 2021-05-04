@@ -17,6 +17,8 @@ namespace Domain
         [StringLength(32)] [Required] public string SexualOrientation { get; set; }
 
         [Range(16, 100)] [Required] public int Age { get; set; }
+        
+        [StringLength(65536)] public string FcmToken { get; set; }
 
         [StringLength(64)] public string FieldOfStudy { get; set; }
 
@@ -50,6 +52,8 @@ namespace Domain
         [Range(1, 16)] public int YearOfStudy { get; set; }
 
         [StringLength(512)] public string Bio { get; set; }
+        
+        [StringLength(65536)] public string FcmToken { get; set; }
     }
 
     public class UserResponse

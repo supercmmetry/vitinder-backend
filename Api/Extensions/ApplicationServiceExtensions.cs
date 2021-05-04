@@ -1,6 +1,8 @@
 using Api.Filters;
 using Application.Core;
 using CloudinaryDotNet;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,9 +17,18 @@ namespace Api.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            FirebaseApp.Create(new AppOptions
+            {
+                Credential = GoogleCredential.FromFile("service-account.json")
+            });
+            
             services.AddSingleton(config);
             services.AddRouting(options => options.LowercaseUrls = true);
-            services.AddMvc(options => { options.Filters.Add(new ValidationFilter()); });
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ValidationFilter());
+                options.Filters.Add(new ExceptionFilter());
+            });
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

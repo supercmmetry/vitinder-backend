@@ -12,11 +12,16 @@
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="10.1.1" />
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+      <PackageReference Include="Blurhash.Core" Version="1.1.0" />
+      <PackageReference Include="Blurhash.ImageSharp" Version="1.0.0" />
+      <PackageReference Include="Blurhash.System.Drawing" Version="2.0.0" />
       <PackageReference Include="Cloudinary.Core.DependencyInjection" Version="1.31.0" />
+      <PackageReference Include="FirebaseAdmin" Version="2.1.0" />
       <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.24" />
       <PackageReference Include="MediatR" Version="9.0.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.5" />
+      <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     </ItemGroup>
 
 </Project>

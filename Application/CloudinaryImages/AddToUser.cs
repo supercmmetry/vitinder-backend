@@ -1,13 +1,11 @@
-using System.Linq;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper.Configuration;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.CloudinaryImages
@@ -65,12 +63,20 @@ namespace Application.CloudinaryImages
                             Id = result.PublicId,
                             Url = result.Uri.ToString()
                         };
-
-                        _context.CloudinaryImages.Add(currentUser.ProfileImage);
-
-                        _context.Users.Update(currentUser);
-                        await _context.SaveChangesAsync();
                     }
+
+                    var encoder = new System.Drawing.Blurhash.Encoder();
+
+                    using (var stream = request.File.OpenReadStream())
+                    {
+                        var image = Image.FromStream(stream);
+                        currentUser.ProfileImage.BlurHash = encoder.Encode(image, 3, 3);
+                    }
+                    
+                    _context.CloudinaryImages.Add(currentUser.ProfileImage);
+
+                    _context.Users.Update(currentUser);
+                    await _context.SaveChangesAsync();
                 }
                 
                 return Unit.Value;
