@@ -1,14 +1,17 @@
 # VITinder Backend
 ASP.Net Core backend for VITinder written with Mediator and CQRS
 
-Uses cloudinary for image hosting
+## Features
+- Uses [cloudinary](https://cloudinary.com) for image hosting
+- Supports [BlurHash](https://blurha.sh)
+- Firebase for Auth and Messaging
 
 ## Configuration
 - Requires PostgreSQL database.
 
 - Manage app settings (appsettings.json)
 
-```
+```js
 {
   "Logging": {
     "LogLevel": {
@@ -36,11 +39,6 @@ Uses cloudinary for image hosting
 }
 
 ```
-
-- Create migrations
-
-  `dotnet ef migrations add InitialCreate --project Persistence --startup-project Api`
-
 - Apply migrations
 
   `dotnet ef database update --project Persistence --startup-project Api`
