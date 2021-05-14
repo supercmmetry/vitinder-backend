@@ -65,10 +65,9 @@ namespace Application.CloudinaryImages
                         };
                     }
 
-                    var encoder = new System.Drawing.Blurhash.Encoder();
-
                     using (var stream = request.File.OpenReadStream())
                     {
+                        var encoder = new System.Drawing.Blurhash.Encoder();
                         var image = Image.FromStream(stream);
                         currentUser.ProfileImage.BlurHash = encoder.Encode(image, 3, 3);
                     }

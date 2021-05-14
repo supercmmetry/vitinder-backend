@@ -47,6 +47,11 @@ namespace Application.Core
             CreateMap<CloudinaryImage, CloudinaryImage>();
             CreateMap<CloudinaryImage, CloudinaryImageResponse>();
         }
+        
+        private void CreateChatMaps()
+        {
+            CreateMap<ChatMessageRequest, ChatMessage>();
+        }
 
         public MappingProfiles()
         {
@@ -56,6 +61,7 @@ namespace Application.Core
             CreateMatchMaps();
             CreateDateMaps();
             CreateCloudinaryImageMaps();
+            CreateChatMaps();
         }
     }
 }

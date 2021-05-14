@@ -4,6 +4,7 @@ using Api.Extensions;
 using Api.Middlewares;
 using Application.Dates;
 using Domain;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,21 @@ namespace Api.Controllers
 
             dates.ForEach(date => date.Swap(currentUser));
             return Mapper.Map<List<Date>, List<DateResponse>>(dates);
+        }
+
+        [Authorize]
+        [RequireAccess(Access.Common)]
+        [HttpPost("chat")]
+        public async Task<IActionResult> ChatWithDate(ChatMessageRequest request)
+        {
+            var message = Mapper.Map<ChatMessageRequest, ChatMessage>(request);
+            await Mediator.Send(new ChatWithDate.Command
+            {
+                ChatMessage = message,
+                UserId = HttpContext.GetUserId()
+            });
+
+            return Ok();
         }
     }
 }

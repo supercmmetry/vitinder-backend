@@ -28,6 +28,18 @@ namespace Domain
             Other = User;
             User = currentUser;
         }
+
+        public void Swap(string userId)
+        {
+            if (User.Id == userId)
+            {
+                return;
+            }
+
+            var tmp = User;
+            User = Other;
+            Other = tmp;
+        }
     }
 
     public class DateResponse

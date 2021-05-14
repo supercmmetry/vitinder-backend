@@ -10,6 +10,7 @@ namespace Api.Extensions
         public static IServiceCollection AddDateServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddMediatR(typeof(ReadManyByUser.Handler));
+            services.AddMediatR(typeof(ChatWithDate.Handler));
             return services;
         }
     }
